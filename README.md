@@ -111,3 +111,7 @@ for stream in listener.incoming() {
 ```
 
 By implementing ThreadPool, the server can handle multiple requests concurrently. In this implementation, we also limit the number of threads to 4. This is because creating too many threads can cause the server to slow down.
+
+### Commit Bonus Reflection notes
+
+In this commit, we change the implementation of making new ThreadPool from `new` method to `build` method. We are not using assert but condition to check if the number of threads is greater than 0. This is better because assert might lead to unrecoverable error. By using condition instead, the error is still recoverable and more informative. Note that when calling the `build` method, we need to unwrap it first. In the end, we can see that the server can handle multiple requests concurrently just like our former implementation.
