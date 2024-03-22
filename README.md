@@ -44,4 +44,42 @@ fn handle_connection(mut stream: TcpStream) {
 ```
 
 The difference in this commit is that we add a response to the client. We created a status line, contents, and its length. Then we format the response with the status line, length, and contents. Finally, we write the response to the stream. According to our formatting, the `status_line` and `Content-Length` will be the response header, and the `contents` will be the response body. Below is the screenshot of the response in the browser:
-![commit2](/commit2.png)
+![commit2](/public/commit2.png)
+
+### Commit 3 Reflection notes
+
+We can split the response by adding a conditional statement to check the request. If the request is `GET /`, we will return the `hello.html` page. Otherwise, we will return the `404.html` page. Below is the code snippet:
+
+```rust
+    let status_line;
+    let contents;
+
+    if http_request[0].starts_with("GET / ") {
+        status_line = "HTTP/1.1 200 OK";
+        contents = fs::read_to_string("pages/hello.html").unwrap();
+    } else {
+        status_line = "HTTP/1.1 404 NOT FOUND";
+        contents = fs::read_to_string("pages/404.html").unwrap();
+    }
+```
+
+However, for the sake of maintainability, we can refactor the code by creating a function to handle the response. Below is the code snippet:
+
+```rust
+fn handle_response(request: &String) -> (&str, String) {
+    if request.starts_with("GET / ") {
+        return ("HTTP/1.1 200 OK", fs::read_to_string("pages/hello.html").unwrap());
+    }
+    return ("HTTP/1.1 404 NOT FOUND", fs::read_to_string("pages/404.html").unwrap());
+}
+```
+
+We then call the function in the `handle_connection` function as follows:
+
+```rust
+    let (status_line, contents) = handle_response(&http_request[0]);
+```
+
+Below is the screenshot of the response in the browser:
+
+![commit3](/public/commit3.png)

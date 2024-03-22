@@ -22,12 +22,19 @@ fn handle_connection(mut stream: TcpStream) {
         .take_while(|line| !line.is_empty())
         .collect();
 
-    let status_line = "HTTP/1.1 200 OK";
-    let contents = fs::read_to_string("hello.html").unwrap();
-    let length = contents.len();
+    if http_request.is_empty() {
+        return;
+    }
 
-    let response =
-        format!("{status_line}\r\nContent-Length:{length}\r\n\r\n{contents}");
+    let (status_line, contents) = handle_response(&http_request[0]);
+    let response = format!("{status_line}\r\nContent-Length:{length}\r\n\r\n{contents}", status_line = status_line, length = contents.len(), contents = contents);
     
     stream.write_all(response.as_bytes()).unwrap();
+}
+
+fn handle_response(request: &String) -> (&str, String) {
+    if request.starts_with("GET / ") {
+        return ("HTTP/1.1 200 OK", fs::read_to_string("pages/hello.html").unwrap());
+    }
+    return ("HTTP/1.1 404 NOT FOUND", fs::read_to_string("pages/404.html").unwrap());
 }
