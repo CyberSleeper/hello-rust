@@ -83,3 +83,15 @@ We then call the function in the `handle_connection` function as follows:
 Below is the screenshot of the response in the browser:
 
 ![commit3](/public/commit3.png)
+
+### Commit 4 Reflection notes
+
+In this commit, we added a sleep endpoint to the server.
+
+```rust
+"GET /sleep HTTP/1.1" => {
+    thread::sleep(Duration::from_secs(10)); ("HTTP/1.1 200 OK", "pages/hello.html") 
+}
+```
+
+But in this commit, the server will not be able to handle multiple requests concurrently. This is because the server is single-threaded.
