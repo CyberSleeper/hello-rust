@@ -95,3 +95,19 @@ In this commit, we added a sleep endpoint to the server.
 ```
 
 But in this commit, the server will not be able to handle multiple requests concurrently. This is because the server is single-threaded. In this case, the server will sleep for 10 seconds before responding to the client. If another client sends a request, the server will not be able to handle it until the first request is completed. To handle multiple requests concurrently, we can use the `thread::spawn` method to spawn a new thread for each request. We will talk about this in the next commit.
+
+### Commit 5 Reflection notes
+
+In this commit, we implement ThreadPool to handle each request concurrently. We create a struct `ThreadPool` with a vector of threads. We then implement the `new` method to create a new ThreadPool. We also implement the `execute` method to execute the closure in a thread. Below is the code snippet to create a new ThreadPool:
+
+```rust
+for stream in listener.incoming() {
+    let stream = stream.unwrap();
+
+    pool.execute(|| {
+        handle_connection(stream);
+    });
+}
+```
+
+By implementing ThreadPool, the server can handle multiple requests concurrently. In this implementation, we also limit the number of threads to 4. This is because creating too many threads can cause the server to slow down.
